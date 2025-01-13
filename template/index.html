@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Song Recommendation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #songInput {
+            padding: 10px;
+            width: 300px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        #recommendations {
+            list-style: none;
+            padding: 0;
+        }
+        #recommendations li {
+            background-color: #34495e;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            width: 300px;
+        }
+        #recommendButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #2980b9;
+            border: none;
+            border-radius: 5px;
+            color: #ecf0f1;
+            cursor: pointer;
+        }
+        #recommendButton:hover {
+            background-color: #3498db;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Song Recommendation System</h1>
+    <div id="container">
+        <input type="text" id="songInput" placeholder="Enter song name..." />
+        <button id="recommendButton">Get Recommendations</button>
+        <ul id="recommendations"></ul>
+    </div>
+
+    <script>
+        // Fetch song names dynamically
+        const songs = [
+            "I Don’t Care (with Justin Bieber) - Loud Luxury Remix",
+            "Memories - Dillon Francis Remix",
+            "Someone You Loved - Future Humans Remix",
+            "All the Time - Don Diablo Remix",
+            // Add all 30,000 songs here
+        ];
+
+        // Function to handle song recommendation
+        document.getElementById('recommendButton').addEventListener('click', async function() {
+            const songName = document.getElementById('songInput').value;
+            
+            if (songName === '') {
+                alert('Please enter a song name.');
+                return;
+            }
+
+            try {
+                // Send a GET request to Flask backend
+                const response = await fetch(`http://127.0.0.1:5000/recommend?track_name=${encodeURIComponent(songName)}`);
+                const recommendedSongs = await response.json();
+
+                // Clear the current recommendations
+                const recommendationsList = document.getElementById('recommendations');
+                recommendationsList.innerHTML = '';
+
+                // Display the recommended songs
+                recommendedSongs.forEach(song => {
+                    const li = document.createElement('li');
+                    li.textContent = song;
+                    recommendationsList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error fetching recommendations:', error);
+                alert('Error fetching recommendations. Please try again later.');
+            }
+        });
+    </script>
+
+</body>
+</html>
